@@ -3,6 +3,7 @@ package com.example.demo.boot;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.example.demo.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,13 +23,16 @@ import lombok.extern.slf4j.Slf4j;
 public class JPABoot implements CommandLineRunner {
 	private final RoleRepository roleRepository;
 	private final UserRepository userRepository;
-	//private final UserMapper userMapper;
+	private final UserService userService;
+//	@Autowired
+//	private  UserMapper userMapper;
 
-	public JPABoot(RoleRepository roleRepository, UserRepository userRepository) {
+	public JPABoot(RoleRepository roleRepository, UserRepository userRepository, UserService userService) {
 		// TODO Auto-generated constructor stub
 		this.roleRepository = roleRepository;
 		this.userRepository = userRepository;
 		//this.userMapper = userMapper;
+		this.userService = userService;
 	}
 
 	@Override
@@ -43,7 +47,7 @@ public class JPABoot implements CommandLineRunner {
 		role=roleRepository.save(role);
 		
 		Role role1=new Role();
-		role1.setName("ADMIN");
+		role1.setName("USER");
 		role1=roleRepository.save(role1);
 		log.info("saved daya ::"+role1);
 		
@@ -59,8 +63,19 @@ public class JPABoot implements CommandLineRunner {
 		
 		UserDTO dto=new UserDTO();
 		dto.setEmail("julie@gmail.com");
-		dto.setRoleName("ADMIN");
+		Set<String> rolesName=new HashSet<String>();
+		rolesName.add("ADMIN");
+		rolesName.add("USER");
+		dto.setRoleName(rolesName);
 		User convertedUser = UserMapper.INSTANCE.toUser(dto);
+		Role userrole=roleRepository.findById(1L).get();
+		Set<Role> roles=new HashSet<Role>();
+		roles.add(userrole);
+		//convertedUser.setRoles(roles);
+		convertedUser.setRoles(roleSet);
+
+		convertedUser=userRepository.save(convertedUser);
+		//convertedUser=userService.createUser(dto);
 		log.info("user after conversion ::"+convertedUser);
 	}
 

@@ -6,12 +6,7 @@ import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -36,14 +31,20 @@ public class User implements UserDetails{
 	private String name;
 	private String email;
 	private String password;
-	@OneToMany
+	@ManyToMany
+	@JoinTable(name = "user_role", joinColumns = {
+			@JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = {
+			@JoinColumn(name = "role_id", referencedColumnName = "id") })
 	private Set<Role> roles;
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		Set<SimpleGrantedAuthority> grantAuthoritySet=new HashSet<SimpleGrantedAuthority>();
-		roles.stream().map(role->{SimpleGrantedAuthority grantedAuthority=new SimpleGrantedAuthority(role.getName());
-		return grantedAuthority;
-		}).collect(Collectors.toSet());
+		Set<SimpleGrantedAuthority> grantAuthoritySet = new HashSet<SimpleGrantedAuthority>();
+		if (roles != null && roles.size() > 0){
+			grantAuthoritySet = roles.stream().map(role -> {
+				SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority(role.getName());
+				return grantedAuthority;
+			}).collect(Collectors.toSet());
+	}
 		return grantAuthoritySet;
 	}
 //	public void setPassword(String password) {
