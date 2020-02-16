@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.demo.model.Role;
 
-public interface RoleRepository extends JpaRepository<Role, Long>{
-public Optional<Role> findByName(String name);
+public interface RoleRepository extends JpaRepository<Role, Long> {
+    public Optional<Role> findByName(String name);
 }

@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class PasswordUtils {
-    	public  String getEncodedPassword(String password) {
-		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		String hashedPassword = passwordEncoder.encode(password);
-		log.info("password in util setter " + hashedPassword);
-		return hashedPassword;
-	}
+    public String getEncodedPassword(String password) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(password);
+        log.info("password in util setter " + hashedPassword);
+        return hashedPassword;
+    }
 }

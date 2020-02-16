@@ -13,8 +13,9 @@ import lombok.Data;
 @Entity
 @Data
 public class Role {
-	@Id @GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name="ID")
-private Long id;
-private String name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
+    private Long id;
+    private String name;
 }

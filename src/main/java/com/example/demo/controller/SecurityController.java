@@ -6,17 +6,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class SecurityController {
 
-	@GetMapping("/hello")
-	public String getHelloPage() {
-		return "Hello";
-	}
-	@GetMapping({"/","/home"})
-	public String getHoePage() {
-		return "home";
-	}
-	
-	@GetMapping({"/login"})
-	public String getLoginPage() {
-		return "login";
-	}
+    @GetMapping("/hello")
+    public String getHelloPage() {
+        return "Hello";
+    }
+
+    @GetMapping({"/", "/home"})
+    public String getHoePage() {
+        return "home";
+    }
+
+    @GetMapping({"/login"})
+    public String getLoginPage() {
+        return "login";
+    }
 }

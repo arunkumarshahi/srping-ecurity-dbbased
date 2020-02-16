@@ -19,36 +19,36 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	private UserDetailsService customUserDetailsService;
+    @Autowired
+    private UserDetailsService customUserDetailsService;
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-	//http://localhost:8092/webjars/springfox-swagger-ui/springfox.css?v=2.9.2
-	//http://localhost:8092/swagger-resources/configuration/ui
-	@Override
-	protected void configure(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.authorizeRequests().antMatchers("/", "/home", "/h2-console", "/h2-console/*"
-				,"/api/**"
-//				,"/swagger-ui.html","/swagger-ui.html/*","/swagger-ui.html/**"
-//				,"/webjars","/webjars/*","/webjars/**",
-//				"/swagger-resources","/swagger-resources/*","/swagger-resources/**"
-				).permitAll()
-				.anyRequest().authenticated().and().formLogin().loginPage("/login").permitAll().and().logout()
-				.permitAll();
+    //http://localhost:8092/webjars/springfox-swagger-ui/springfox.css?v=2.9.2
+    //http://localhost:8092/swagger-resources/configuration/ui
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.authorizeRequests().antMatchers("/", "/home", "/h2-console", "/h2-console/*"
+                , "/api/**"
 
-		httpSecurity.csrf().disable();
-		httpSecurity.headers().frameOptions().disable();
-	}
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**");
+        ).permitAll()
+                .anyRequest().authenticated().and().formLogin().loginPage("/login").permitAll().and().logout()
+                .permitAll();
 
-	}
-//	@Bean
+        httpSecurity.csrf().disable();
+        httpSecurity.headers().frameOptions().disable();
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**");
+
+    }
+
+    //	@Bean
 //	@Override
 //	public UserDetailsService userDetailsService() {
 //		UserDetails user = User.withDefaultPasswordEncoder().username("user").password("password").roles("USER")
@@ -56,9 +56,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //
 //		return new InMemoryUserDetailsManager(user);
 //	}
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		System.out.print("is it configureGlobal" + auth);
-		auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
-	}
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        System.out.print("is it configureGlobal" + auth);
+        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
+    }
 }

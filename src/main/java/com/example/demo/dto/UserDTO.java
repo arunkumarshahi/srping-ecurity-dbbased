@@ -6,9 +6,9 @@ import java.util.Set;
 
 @Data
 public class UserDTO {
-	private String name;
-	private String email;
-	private String password;
-	private Set<String> roleName;
+    private String name;
+    private String email;
+    private String password;
+    private Set<String> roleName;
 
 }

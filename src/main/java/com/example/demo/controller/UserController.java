@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
-//@Autowired
+    //@Autowired
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -19,7 +19,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public User createUser(@RequestBody UserDTO userDTO){
-     return userService.createUser(userDTO);
+    public User createUser(@RequestBody UserDTO userDTO) {
+        return userService.createUser(userDTO);
     }
 }

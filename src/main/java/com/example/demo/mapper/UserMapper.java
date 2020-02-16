@@ -18,10 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Mapper
 @Slf4j
 public abstract class UserMapper {
-//	public UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
-	public static final UserMapper INSTANCE = Mappers.getMapper( UserMapper.class );
-	@Autowired
-	public PasswordUtils passwordUtils;
+    //	public UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+    public static final UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+    @Autowired
+    public PasswordUtils passwordUtils;
 //	@Autowired
 //	RoleRepository roleRepository;
 //	@Mapping(source = "name", target = "categoryName")
@@ -30,8 +30,8 @@ public abstract class UserMapper {
 //	@Mapping(source = "categoryName", target = "name")
 //	User categoryDTOToCategory(UserDTO categoryDTO);
 
-	@AfterMapping
-	protected void enrichUser(UserDTO userDto, @MappingTarget User user) {
+    @AfterMapping
+    protected void enrichUser(UserDTO userDto, @MappingTarget User user) {
 //		log.info("Total result "+roleRepository.findAll());
 //		Role role = roleRepository.findByName(userDto.getRoleName())
 //				.orElseThrow(() -> new RuntimeException("role not found"));
@@ -39,16 +39,16 @@ public abstract class UserMapper {
 //		roleSet.add(role);
 
 
-	}
+    }
 
 //    @AfterMapping
 //    protected void convertNameToUpperCase(@MappingTarget UserDTO userDto) {
 //		//user.setPassword(getEncodedPassword(userDto.getPassword()));
 //	}
 
-//    }
-	//@Mapping(source = "roleName", target = "role")
-	  public  abstract User toUser(UserDTO userDTO);
+    //    }
+    //@Mapping(source = "roleName", target = "role")
+    public abstract User toUser(UserDTO userDTO);
 //	  {
 //	  	User user = new User();
 //	  	return user;

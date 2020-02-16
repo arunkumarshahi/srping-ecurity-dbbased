@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -26,24 +27,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(UserDTO userDTO) {
-        Set<Role> roles=new HashSet<Role>();
-        roles=userDTO.getRoleName().stream().map(roleName->{Role role=roleRepository.findByName(roleName).get();
-        return role;
+        Set<Role> roles = new HashSet<Role>();
+        roles = userDTO.getRoleName().stream().map(roleName -> {
+            Role role = roleRepository.findByName(roleName).get();
+            return role;
         }).collect(Collectors.toSet());
-        log.info("User :::"+userDTO);
+        log.info("User :::" + userDTO);
         User user = UserMapper.INSTANCE.toUser(userDTO);
         user.setRoles(roles);
-        log.info("converted User :::"+user);
+        log.info("converted User :::" + user);
         user.setPassword(getEncodedPassword(userDTO.getPassword()));
-        user=userRepository.save(user);
+        user = userRepository.save(user);
 
-        log.info("convesaved  User :::"+user);
+        log.info("convesaved  User :::" + user);
         return user;
     }
 
-    public String getEncodedPassword(String password){
+    public String getEncodedPassword(String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String hashedPassword = passwordEncoder.encode(password);
-       return hashedPassword;
+        return hashedPassword;
     }
 }

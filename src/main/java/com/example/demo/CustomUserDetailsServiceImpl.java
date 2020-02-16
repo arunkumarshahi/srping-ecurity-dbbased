@@ -16,16 +16,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Transactional
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
-	private final UserRepository userRepository;
-	public CustomUserDetailsServiceImpl(UserRepository userRepository) {
-		this.userRepository=userRepository;
-	}
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		// TODO Auto-generated method stub
-		User user=userRepository.findByEmail(username).orElseThrow(()->new RuntimeException("User not found"));
-		log.info("user in user detail service ::"+user);
-		return user;
-	}
+    private final UserRepository userRepository;
+
+    public CustomUserDetailsServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // TODO Auto-generated method stub
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new RuntimeException("User not found"));
+        log.info("user in user detail service ::" + user);
+        return user;
+    }
 
 }
