@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
@@ -26,16 +27,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 
+	//http://localhost:8092/webjars/springfox-swagger-ui/springfox.css?v=2.9.2
+	//http://localhost:8092/swagger-resources/configuration/ui
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.authorizeRequests().antMatchers("/", "/home", "/h2-console", "/h2-console/*","/api/**").permitAll()
+		httpSecurity.authorizeRequests().antMatchers("/", "/home", "/h2-console", "/h2-console/*"
+				,"/api/**"
+//				,"/swagger-ui.html","/swagger-ui.html/*","/swagger-ui.html/**"
+//				,"/webjars","/webjars/*","/webjars/**",
+//				"/swagger-resources","/swagger-resources/*","/swagger-resources/**"
+				).permitAll()
 				.anyRequest().authenticated().and().formLogin().loginPage("/login").permitAll().and().logout()
 				.permitAll();
 
 		httpSecurity.csrf().disable();
 		httpSecurity.headers().frameOptions().disable();
 	}
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+		web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**");
 
+	}
 //	@Bean
 //	@Override
 //	public UserDetailsService userDetailsService() {
