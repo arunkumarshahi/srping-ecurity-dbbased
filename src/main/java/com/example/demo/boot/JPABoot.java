@@ -62,7 +62,8 @@ public class JPABoot implements CommandLineRunner {
         userRepository.save(user);
 
         UserDTO dto = new UserDTO();
-        dto.setEmail("julie@gmail.com");
+        dto.setEmail("Test");
+        dto.setPassword("Welcome1");
         Set<String> rolesName = new HashSet<String>();
         rolesName.add("ADMIN");
         rolesName.add("USER");

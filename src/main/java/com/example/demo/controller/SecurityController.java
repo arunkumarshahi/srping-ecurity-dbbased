@@ -10,8 +10,11 @@ public class SecurityController {
     public String getHelloPage() {
         return "Hello";
     }
-
-    @GetMapping({"/", "/home"})
+    @GetMapping("/")
+    public String getSitemapPage() {
+        return "Sitemap";
+    }
+    @GetMapping({"/home"})
     public String getHoePage() {
         return "home";
     }
