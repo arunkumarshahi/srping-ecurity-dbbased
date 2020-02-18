@@ -3,10 +3,10 @@
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <title>Hello Mate !</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
 </head>
 <body>
-<div class="prev"><a href="/hello">Access secured page</a></div>
-<div class="prev"><a href="/home">Access Home page</a></div>
-<div class="prev"><a href="/swagger-ui.html">Access Swagger UI</a></div>
+<div th:replace="fragments/header :: header"/>
+
 </body>
 </html>

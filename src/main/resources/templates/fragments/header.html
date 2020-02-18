@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<!--    <link rel="stylesheet" th:href="@{/css/header.css}">-->
+    <link href="../static/css/header.css" th:href="@{/css/header.css}" rel="stylesheet" />
+    <link href="../css/header.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}"/>
+</head>
+<body>
+<div class="navbar navbar-inverse navbar-fixed-top" th:fragment="header">
+    <div class="container">
+
+        <div class="header">
+
+            <div>
+            <img th:src="@{/images/logo.jpg}" class="imgStyle"/>
+            <div class="header-right">
+
+                <h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
+
+                <a class="active" th:href="@{/}">Home</a>
+                <a th:href="@{/hello}">Secured page</a>
+                <a th:href="@{/swagger-ui.html}">swagger-ui</a>
+            </div>
+            </div>
+        </div>
+       <!-- <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li th:classappend="${module == 'home' ? 'active' : ''}">
+                    <a href="#" th:href="@{/}">Home</a>
+                </li>
+                <li th:classappend="${module == 'tasks' ? 'active' : ''}">
+                    <a href="#" th:href="@{/hello}">Access secured page</a>
+                </li>
+                <li th:classappend="${module == 'tasks' ? 'active' : ''}">
+                    <a href="#" th:href="@{/swagger-ui.html}">Access Swagger UI<</a>
+                </li>
+                <li th:classappend="${module == 'tasks' ? 'active' : ''}">
+                    <a href="#" th:href="@{/v2/api-docs}">api v2 specification<</a>
+                </li>
+            </ul>-->
+           <!-- <ul class="nav navbar-nav navbar-right">
+                <li th:if="${#httpServletRequest.isAuthenticated}">
+                    <a href="/signin" th:href="@{/signin}">
+                        <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp;Sign in
+                    </a>
+                </li>
+                <li th:if="${#httpServletRequest.isAuthenticated}">
+                    <a href="/logout" th:href="@{#}" onclick="$('#form').submit();">
+                        <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>&nbsp;Logout
+                    </a>
+                    <form style="visibility: hidden" id="form" method="post" action="#" th:action="@{/logout}"></form>
+                </li>
+            </ul>-->
+<!--        </div>-->
+    </div>
+</div>
+</body>
+</html>
