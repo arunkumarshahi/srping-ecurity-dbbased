@@ -63,7 +63,7 @@ public class JPABoot implements CommandLineRunner {
 
         UserDTO dto = new UserDTO();
         dto.setEmail("Test");
-        dto.setPassword("Welcome1");
+        dto.setPassword(getEncodedPassword("Welcome1"));
         Set<String> rolesName = new HashSet<String>();
         rolesName.add("ADMIN");
         rolesName.add("USER");
