@@ -30,7 +30,7 @@ A multi login spring security is defined to support following types of authentic
     java -jar target/multi-login-0.0.1-SNAPSHOT.jar
     
 # Usage
-* Regular home page: localhost:8080/regular/home
-* Regular login page: localhost:8080/regular/login
-* Special home page: localhost:8080/special/home
-* Special login page: localhost:8080/special/login
+* Regular home page: http://localhost:8094/
+* Regular login page: http://localhost:8094/login
+* Test basic authentication ping service: http://localhost:8094/api/v1/ping
+* Test user creation service: http://localhost:8094/swagger-ui.html
