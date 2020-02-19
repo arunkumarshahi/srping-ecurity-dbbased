@@ -15,6 +15,8 @@ A multi login spring security is defined to support following types of authentic
   #### JWT token based - jwt implementation is based on following blog post
   https://dzone.com/articles/spring-boot-security-json-web-tokenjwt-hello-world
    
+# spring profile 
+ << work in progress for swagger specification and open api specification>>   
 # Building
     mvn clean install
     
