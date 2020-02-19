@@ -10,9 +10,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 
@@ -26,6 +28,7 @@ public class WebSecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 
+	
 	// http://localhost:8092/webjars/springfox-swagger-ui/springfox.css?v=2.9.2
 	// http://localhost:8092/swagger-resources/configuration/ui
 
@@ -33,13 +36,34 @@ public class WebSecurityConfig {
 	@Order(1)
 	public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 		protected void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/api/**")
-					.authorizeRequests().anyRequest().authenticated()
-					.and().httpBasic()
-			;
+			http.antMatcher("/api/**").authorizeRequests().anyRequest().authenticated().and().httpBasic();
 			http.csrf().disable();
 			http.headers().frameOptions().disable();
 
+		}
+	}
+
+	@Configuration
+	@Order(2)
+	public static class JWTWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+		@Autowired
+		private JwtRequestFilter jwtRequestFilter;
+
+		@Autowired
+		private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+		protected void configure(HttpSecurity httpSecurity) throws Exception {
+			// We don't need CSRF for this example
+			httpSecurity.csrf().disable()
+					// dont authenticate this particular request
+					.authorizeRequests().antMatchers("/authenticate").permitAll().
+					// all other requests need to be authenticated
+					anyRequest().authenticated().and().
+					// make sure we use stateless session; session won't be used to
+					// store user's state.
+					exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
+					.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+			// Add a filter to validate the tokens with every request
+			httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 		}
 	}
 
@@ -49,16 +73,14 @@ public class WebSecurityConfig {
 
 		@Override
 		protected void configure(HttpSecurity httpSecurity) throws Exception {
-			httpSecurity.authorizeRequests()
-					.antMatchers("/", "/home", "/h2-console", "/h2-console/*", "/webjars/**")
-					.permitAll()
-					.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-					//adding below section to enable basic authentication for api call
-					//.antMatchers("/v3/api-docs", "/swagger-ui.html").hasAuthority("USER").anyRequest().authenticated().and().httpBasic()
-					//end of basic authentication for api.
-					.antMatchers("/v3/api-docs", "/swagger-ui.html").hasAuthority("USER").anyRequest().authenticated().and()
-					.formLogin().loginPage("/login").permitAll().and().logout().permitAll()
-			;
+			httpSecurity.authorizeRequests().antMatchers("/", "/home", "/h2-console", "/h2-console/*", "/webjars/**")
+					.permitAll().requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+					// adding below section to enable basic authentication for api call
+					// .antMatchers("/v3/api-docs",
+					// "/swagger-ui.html").hasAuthority("USER").anyRequest().authenticated().and().httpBasic()
+					// end of basic authentication for api.
+					.antMatchers("/v3/api-docs", "/swagger-ui.html").hasAuthority("USER").anyRequest().authenticated()
+					.and().formLogin().loginPage("/login").permitAll().and().logout().permitAll();
 
 			httpSecurity.csrf().disable();
 			httpSecurity.headers().frameOptions().disable();
@@ -66,9 +88,8 @@ public class WebSecurityConfig {
 
 		@Override
 		public void configure(WebSecurity web) throws Exception {
-			web.ignoring().antMatchers(
-					"/v2/api-docs/**",
-					"/configuration/ui", "/swagger-resources/**", "/configuration/**", "/css/**", "/images/**");
+			web.ignoring().antMatchers("/v2/api-docs/**", "/configuration/ui", "/swagger-resources/**",
+					"/configuration/**", "/css/**", "/images/**");
 
 		}
 	}
