@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -20,8 +21,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 public class WebSecurityConfig {
 
-	@Autowired
-	private UserDetailsService customUserDetailsService;
+
+	private final UserDetailsService customUserDetailsService;
+
+	public WebSecurityConfig(UserDetailsService customUserDetailsService) {
+		this.customUserDetailsService = customUserDetailsService;
+	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -48,6 +53,11 @@ public class WebSecurityConfig {
 	public static class JWTWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 		@Autowired
 		private JwtRequestFilter jwtRequestFilter;
+		@Bean
+		@Override
+		public AuthenticationManager authenticationManagerBean() throws Exception {
+			return super.authenticationManagerBean();
+		}
 
 		@Autowired
 		private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -56,8 +66,9 @@ public class WebSecurityConfig {
 			httpSecurity.csrf().disable()
 					// dont authenticate this particular request
 					.authorizeRequests().antMatchers("/authenticate").permitAll().
+					antMatchers("/auth/v1/**").authenticated().and().
 					// all other requests need to be authenticated
-					anyRequest().authenticated().and().
+					//anyRequest().authenticated().and().
 					// make sure we use stateless session; session won't be used to
 					// store user's state.
 					exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()

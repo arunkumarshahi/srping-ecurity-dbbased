@@ -2,6 +2,7 @@ package com.example.demo;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -16,16 +17,27 @@ import java.util.Collections;
 @EnableSwagger2
 
 public class SwaggerConfig {
-    @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.example.demo"))
-                .paths(PathSelectors.ant("/api/v1/*"))
-                .build()
-                .apiInfo(apiInfo());
-    }
 
+
+//    @Bean
+//    public Docket api() {
+//        return new Docket(DocumentationType.SWAGGER_2)
+//                .select()
+//                .apis(RequestHandlerSelectors.basePackage("com.example.demo"))
+//                .paths(PathSelectors.ant("/api/v1/*"))
+//                .build()
+//                .apiInfo(apiInfo());
+//    }
+
+    @Bean
+    public Docket frameworkApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .pathMapping("/")
+                .select()
+                .paths(PathSelectors.regex("/.*"))
+                .build();
+    }
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "My User controller API",
