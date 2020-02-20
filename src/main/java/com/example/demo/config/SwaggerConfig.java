@@ -1,7 +1,8 @@
-package com.example.demo;
+package com.example.demo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -15,7 +16,7 @@ import java.util.Collections;
 
 @Configuration
 @EnableSwagger2
-
+@Profile("swagger")
 public class SwaggerConfig {
 
 

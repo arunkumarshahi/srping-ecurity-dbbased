@@ -109,7 +109,7 @@
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
 			<version>1.1.44</version>
-		</dependency>-->
+		</dependency> -->
 		<!-- end of open api specification -->
 		
 	</dependencies>

@@ -16,7 +16,7 @@ import java.util.function.Function;
 // one.com/articles/spring-boot-security-json-web-tokenjwt-hello-world
 @Component
 public class JwtTokenUtil {
-	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+	public static final long JWT_TOKEN_VALIDITY = 20;
 
 	@Value("${jwt.secret}")
 	private String secret;
