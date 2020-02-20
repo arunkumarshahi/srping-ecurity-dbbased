@@ -22,92 +22,108 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
 
 
-	private final UserDetailsService customUserDetailsService;
+    private final UserDetailsService customUserDetailsService;
 
-	public WebSecurityConfig(UserDetailsService customUserDetailsService) {
-		this.customUserDetailsService = customUserDetailsService;
-	}
+    public WebSecurityConfig(UserDetailsService customUserDetailsService) {
+        this.customUserDetailsService = customUserDetailsService;
+    }
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-	
-	// http://localhost:8092/webjars/springfox-swagger-ui/springfox.css?v=2.9.2
-	// http://localhost:8092/swagger-resources/configuration/ui
 
-	@Configuration
-	@Order(1)
-	public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-		protected void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/api/**").authorizeRequests().anyRequest().authenticated().and().httpBasic();
-			http.csrf().disable();
-			http.headers().frameOptions().disable();
+    // http://localhost:8092/webjars/springfox-swagger-ui/springfox.css?v=2.9.2
+    // http://localhost:8092/swagger-resources/configuration/ui
 
-		}
-	}
+    @Configuration
+    @Order(1)
+    public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
-	@Configuration
-	@Order(2)
-	public static class JWTWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-		@Autowired
-		private JwtRequestFilter jwtRequestFilter;
-		@Bean
-		@Override
-		public AuthenticationManager authenticationManagerBean() throws Exception {
-			return super.authenticationManagerBean();
-		}
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean() throws Exception {
+            return super.authenticationManagerBean();
+        }
 
-		@Autowired
-		private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-		protected void configure(HttpSecurity httpSecurity) throws Exception {
-			// We don't need CSRF for this example
-			httpSecurity.csrf().disable()
-					// dont authenticate this particular request
-					.authorizeRequests().antMatchers("/authenticate").permitAll().
-					antMatchers("/auth/v1/**").authenticated().and().
-					// all other requests need to be authenticated
-					//anyRequest().authenticated().and().
-					// make sure we use stateless session; session won't be used to
-					// store user's state.
-					exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
-					.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-			// Add a filter to validate the tokens with every request
-			httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-		}
-	}
+        protected void configure(HttpSecurity http) throws Exception {
+            http.antMatcher("/api/**").authorizeRequests().anyRequest().authenticated().and().httpBasic();
+            http.csrf().disable();
+            http.headers().frameOptions().disable();
 
-	@Configuration
+        }
+    }
 
-	public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+    @Configuration
+    @Order(2)
+    public static class JWTWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+        @Autowired
+        private JwtRequestFilter jwtRequestFilter;
 
-		@Override
-		protected void configure(HttpSecurity httpSecurity) throws Exception {
-			httpSecurity.authorizeRequests().antMatchers("/", "/home", "/h2-console", "/h2-console/*", "/webjars/**")
-					.permitAll().requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-					// adding below section to enable basic authentication for api call
-					// .antMatchers("/v3/api-docs",
-					// "/swagger-ui.html").hasAuthority("USER").anyRequest().authenticated().and().httpBasic()
-					// end of basic authentication for api.
-					.antMatchers("/v3/api-docs", "/swagger-ui.html").hasAuthority("USER").anyRequest().authenticated()
-					.and().formLogin().loginPage("/login").permitAll().and().logout().permitAll();
+//        @Bean
+//        @Override
+//        public AuthenticationManager authenticationManagerBean() throws Exception {
+//            return super.authenticationManagerBean();
+//        }
 
-			httpSecurity.csrf().disable();
-			httpSecurity.headers().frameOptions().disable();
-		}
+        @Autowired
+        private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-		@Override
-		public void configure(WebSecurity web) throws Exception {
-			web.ignoring().antMatchers("/v2/api-docs/**", "/configuration/ui", "/swagger-resources/**",
-					"/configuration/**", "/css/**", "/images/**");
+        protected void configure(HttpSecurity httpSecurity) throws Exception {
+            // We don't need CSRF for this example
+//            httpSecurity.csrf().disable()
+//                    // dont authenticate this particular request
+//                    .authorizeRequests().antMatchers("/authenticate").permitAll().
+//                    antMatchers("/auth/v1/**").authenticated().and().
+//                    // all other requests need to be authenticated
+//                    //anyRequest().authenticated().and().
+//                    // make sure we use stateless session; session won't be used to
+//                    // store user's state.
+//                            exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
+//                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+//            // Add a filter to validate the tokens with every request
+            httpSecurity.
+                    antMatcher("/auth/**").authorizeRequests().anyRequest().authenticated().and().
+                    exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-		}
-	}
+            httpSecurity.csrf().disable();
+            httpSecurity.headers().frameOptions().disable();
+            httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        }
+    }
 
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		System.out.print("is it configureGlobal" + auth);
-		auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
-	}
+    @Configuration
+
+    public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity httpSecurity) throws Exception {
+            httpSecurity.authorizeRequests().antMatchers("/", "/home", "/h2-console", "/h2-console/*", "/webjars/**")
+                    .permitAll().requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                    // adding below section to enable basic authentication for api call
+                    // .antMatchers("/v3/api-docs",
+                    // "/swagger-ui.html").hasAuthority("USER").anyRequest().authenticated().and().httpBasic()
+                    // end of basic authentication for api.
+                    .antMatchers("/v3/api-docs", "/swagger-ui.html").hasAuthority("USER").anyRequest().authenticated()
+                    .and().formLogin().loginPage("/login").permitAll().and().logout().permitAll();
+
+            httpSecurity.csrf().disable();
+            httpSecurity.headers().frameOptions().disable();
+        }
+
+        @Override
+        public void configure(WebSecurity web) throws Exception {
+            web.ignoring().antMatchers("/v2/api-docs/**", "/configuration/ui", "/swagger-resources/**",
+                    "/configuration/**", "/css/**", "/images/**");
+
+        }
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        System.out.print("is it configureGlobal" + auth);
+        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
+    }
 }
