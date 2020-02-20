@@ -61,28 +61,12 @@ public class WebSecurityConfig {
         @Autowired
         private JwtRequestFilter jwtRequestFilter;
 
-//        @Bean
-//        @Override
-//        public AuthenticationManager authenticationManagerBean() throws Exception {
-//            return super.authenticationManagerBean();
-//        }
 
         @Autowired
         private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
         protected void configure(HttpSecurity httpSecurity) throws Exception {
-            // We don't need CSRF for this example
-//            httpSecurity.csrf().disable()
-//                    // dont authenticate this particular request
-//                    .authorizeRequests().antMatchers("/authenticate").permitAll().
-//                    antMatchers("/auth/v1/**").authenticated().and().
-//                    // all other requests need to be authenticated
-//                    //anyRequest().authenticated().and().
-//                    // make sure we use stateless session; session won't be used to
-//                    // store user's state.
-//                            exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
-//                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//            // Add a filter to validate the tokens with every request
+
             httpSecurity.
                     antMatcher("/auth/**").authorizeRequests().anyRequest().authenticated().and().
                     exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
@@ -100,7 +84,8 @@ public class WebSecurityConfig {
 
         @Override
         protected void configure(HttpSecurity httpSecurity) throws Exception {
-            httpSecurity.authorizeRequests().antMatchers("/", "/home", "/h2-console", "/h2-console/*", "/webjars/**")
+            httpSecurity.authorizeRequests().antMatchers("/", "/home", "/h2-console", "/h2-console/*",
+                    "/webjars/**", "/authenticate")
                     .permitAll().requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                     // adding below section to enable basic authentication for api call
                     // .antMatchers("/v3/api-docs",
