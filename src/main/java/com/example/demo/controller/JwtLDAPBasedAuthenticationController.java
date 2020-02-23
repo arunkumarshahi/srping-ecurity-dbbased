@@ -12,9 +12,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.query.LdapQuery;
-import org.springframework.ldap.query.SearchScope;
-import org.springframework.ldap.support.LdapUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -23,9 +20,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
 import java.util.List;
-
-import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 @RestController
 @CrossOrigin
@@ -61,15 +58,6 @@ public class JwtLDAPBasedAuthenticationController {
     }
 
 
-    @GetMapping("/people/{username}")
-    public List<String> search(@PathVariable String username) {
-        return ldapTemplate
-                .search(
-                        "ou=people,dc=springframework,dc=org",
-                        "uid=" + username,
-                        (AttributesMapper<String>) attrs -> (String) attrs.get("sn").get());
-    }
-
     @RequestMapping(value = "/ldapauthenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -95,22 +83,48 @@ public class JwtLDAPBasedAuthenticationController {
 
     @GetMapping("/users")
     public Iterable<UserModel> getAllUsers() {
-        UserModel userModel = apacheDSRepository.findAll().iterator().next();
-        try {
-            authenticate(userModel.getUid(), userModel.getPassword());
-        } catch (Exception e) {
-            e.printStackTrace();
+        //UserModel userModel = apacheDSRepository.findAll().iterator().next();
+//        try {
+//            authenticate(userModel.getUid(), userModel.getPassword());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        LdapQuery query = query()
+//                .searchScope(SearchScope.SUBTREE)
+//                .timeLimit(10)
+//                .countLimit(10)
+//                .attributes("cn")
+//                .base(LdapUtils.emptyLdapName())
+//                .where("objectclass").is("person")
+//                .and("sn").not().is("lastName")
+//                .and("sn").like("h*n")
+//                .and("uid").isPresent();
+        return apacheDSRepository.findAll();
+    }
+
+    @GetMapping("/people/{username}")
+    public List<UserModel> search(@PathVariable String username) {
+        return ldapTemplate
+                .search(
+                        "ou=people,dc=example,dc=com",
+                        "uid=" + username,
+                        new PersonAttributesMapper());
+    }
+
+    private class PersonAttributesMapper implements AttributesMapper<UserModel> {
+        public UserModel mapFromAttributes(Attributes attrs) throws javax.naming.NamingException {
+            UserModel person = new UserModel();
+            person.setLastName((String) attrs.get("cn").get());
+
+            log.info("last name ::" + attrs.get("cn"));
+            Attribute sn = attrs.get("sn");
+            if (sn != null) {
+                person.setLastName((String) sn.get());
+            }
+            person.setUid((String) attrs.get("uid").get());
+            byte[] bytes = (byte[]) attrs.get("userPassword").get();
+            person.setPassword(String.valueOf(bytes));
+            return person;
         }
-        LdapQuery query = query()
-                .searchScope(SearchScope.SUBTREE)
-                .timeLimit(10)
-                .countLimit(10)
-                .attributes("cn")
-                .base(LdapUtils.emptyLdapName())
-                .where("objectclass").is("person")
-                .and("sn").not().is("lastName")
-                .and("sn").like("h*n")
-                .and("uid").isPresent();
-        return apacheDSRepository.findAll(query);
     }
 }

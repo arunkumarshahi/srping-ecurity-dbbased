@@ -29,8 +29,13 @@ A multi login spring security is defined to support following types of authentic
 ### Linux
     ./mvnw spring-boot:run
 ## Java
-    java -jar target/multi-login-0.0.1-SNAPSHOT.jar
-    
+build project with :: mvn clean install -Dmaven.test.skip=true
+### run the application with DB as identity store 
+    java -jar -Dspring.profiles.active=DB target/gs-securing-web-0.0.1-SNAPSHOT.jar
+### run the application with LDAP as identity store 
+    java -jar -Dspring.profiles.active=LDAP target/gs-securing-web-0.0.1-SNAPSHOT.jar
+### run the application with embedded ldap() as identity store 
+    java -jar -Dspring.profiles.active=EMBDLDAP target/gs-securing-web-0.0.1-SNAPSHOT.jar
 # Usage
 * Regular home page: http://localhost:8094/
 * Regular login page: http://localhost:8094/login

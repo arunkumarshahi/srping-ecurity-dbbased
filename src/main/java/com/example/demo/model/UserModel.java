@@ -9,62 +9,27 @@ import org.springframework.ldap.odm.annotations.Id;
 
 import javax.naming.Name;
 
-@Entry(base = "ou=people", objectClasses = {
+@Entry(base = "ou=people,dc=example,dc=com", objectClasses = {
         "top",
-        "inetOrgPerson", "person", "organizationalPerson"
-})
+        "inetOrgPerson", "person", "organizationalPerson",
+        "simpleSecurityObject"})
 @Data
 public class UserModel {
     @JsonIgnore
     @Id
     private Name id;
+
     @JsonProperty("userName")
-    private @Attribute(name = "uid")
+    private @Attribute(name = "cn")
     String uid;
+
     @JsonProperty("password")
-    private @Attribute(name = "userPassword")
+    private @Attribute(name = "cn")
     String password;
-    //    @JsonProperty("firstName")
-//    private @Attribute(name = "cn")
-//    String firstName;
-//    @JsonIgnore
-//    private @Attribute(name = "displayname")
-//    String displayName;
+
     @JsonProperty("lastName")
-    private @Attribute(name = "sn")
+    private @Attribute(name = "cn")
     String lastName;
-//
-//    public UserModel(String uid, String firstName, String displayName, String lastName) {
-//        this.uid = uid;
-//        this.firstName = firstName;
-//        this.displayName = displayName;
-//        this.lastName = lastName;
-//    }
-//
-//    public UserModel(String userName, String firstName, String lastName) {
-//        this.uid = userName;
-//        this.firstName = firstName;
-//        this.lastName = lastName;
-//    }
-//
-//    public UserModel() {
-//    }
-//
-//    public String getFirstName() {
-//        return firstName;
-//    }
-//
-//    public void setFirstName(String firstName) {
-//        this.firstName = firstName;
-//    }
-//
-//    public String getLastName() {
-//        return lastName;
-//    }
-//
-//    public void setLastName(String lastName) {
-//        this.lastName = lastName;
-//    }
 
     public String getUid() {
         return uid;
@@ -74,21 +39,4 @@ public class UserModel {
         this.uid = uid;
     }
 
-//    public String getDisplayName() {
-//        return displayName;
-//    }
-//
-//    public void setDisplayName(String displayName) {
-//        this.displayName = displayName;
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "UserModel{" +
-//                "uid='" + uid + '\'' +
-//                ", firstName='" + firstName + '\'' +
-//                ", displayName='" + displayName + '\'' +
-//                ", lastName='" + lastName + '\'' +
-//                '}';
-//    }
 }
