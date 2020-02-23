@@ -1,26 +1,22 @@
 package com.example.demo.model;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
-import javax.persistence.*;
-
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Table(name = "USERS")
 @Entity
 @Data
 @Slf4j
+//@Accessors(chain = true)
 public class User implements UserDetails {
     /**
      * added default serialization version

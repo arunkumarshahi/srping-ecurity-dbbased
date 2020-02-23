@@ -1,5 +1,7 @@
 package com.example.demo.security;
 
+import com.example.demo.config.ProfileManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -18,14 +20,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
-
+@Slf4j
 public class WebSecurityConfig {
 
 
     private final UserDetailsService customUserDetailsService;
+    private final ProfileManager profileManager;
 
-    public WebSecurityConfig(UserDetailsService customUserDetailsService) {
+    public WebSecurityConfig(UserDetailsService customUserDetailsService, ProfileManager profileManager) {
         this.customUserDetailsService = customUserDetailsService;
+        this.profileManager = profileManager;
     }
 
     @Bean
@@ -60,10 +64,12 @@ public class WebSecurityConfig {
     public static class JWTWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
         @Autowired
         private JwtRequestFilter jwtRequestFilter;
-
-
+        @Autowired
+        UserDetailsService customUserDetailsService;
         @Autowired
         private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+        @Autowired
+        PasswordEncoder passwordEncoder;
 
         protected void configure(HttpSecurity httpSecurity) throws Exception {
 
@@ -76,21 +82,37 @@ public class WebSecurityConfig {
             httpSecurity.headers().frameOptions().disable();
             httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         }
+
+//        @Autowired
+//
+//        public void configure(AuthenticationManagerBuilder auth) throws Exception {
+//            auth
+//                    .ldapAuthentication()
+//                    .userDnPatterns("uid={0},ou=people")
+//                    .groupSearchBase("ou=groups")
+//                    .contextSource()
+//                    .url("ldap://localhost:8389/dc=springframework,dc=org")
+//                    .and()
+//                    .passwordCompare()
+//                    .passwordEncoder(new BCryptPasswordEncoder())
+//                    .passwordAttribute("userPassword");
+//        }
     }
 
     @Configuration
 
     public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+        @Autowired
+        UserDetailsService customUserDetailsService;
+
+        @Autowired
+        PasswordEncoder passwordEncoder;
 
         @Override
         protected void configure(HttpSecurity httpSecurity) throws Exception {
             httpSecurity.authorizeRequests().antMatchers("/", "/home", "/h2-console", "/h2-console/*",
-                    "/webjars/**", "/authenticate")
+                    "/webjars/**", "/authenticate", "/ldapauthenticate", "/users")
                     .permitAll().requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                    // adding below section to enable basic authentication for api call
-                    // .antMatchers("/v3/api-docs",
-                    // "/swagger-ui.html").hasAuthority("USER").anyRequest().authenticated().and().httpBasic()
-                    // end of basic authentication for api.
                     .antMatchers("/v3/api-docs", "/swagger-ui.html").hasAuthority("USER").anyRequest().authenticated()
                     .and().formLogin().loginPage("/login").permitAll().and().logout().permitAll();
 
@@ -104,11 +126,47 @@ public class WebSecurityConfig {
                     "/configuration/**", "/css/**", "/images/**");
 
         }
+
+//        @Autowired
+//
+//        public void configure(AuthenticationManagerBuilder auth) throws Exception {
+//            System.out.print("is it configureGlobal" + auth);
+//            auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
+//        }
+    }
+
+    // @Autowired
+    // @Profile("LDAP")
+    public void configureLDAP(AuthenticationManagerBuilder auth) throws Exception {
+        log.info("configureLDAP invoked ");
+        auth
+                .ldapAuthentication()
+                .userDnPatterns("uid={0},ou=people")
+                .groupSearchBase("ou=groups")
+                .contextSource()
+                .url("ldap://localhost:8389/dc=springframework,dc=org")
+                .and()
+                .passwordCompare()
+                .passwordEncoder(passwordEncoder())
+                .passwordAttribute("userPassword");
     }
 
     @Autowired
+    // @Profile("DB")
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        System.out.print("is it configureGlobal" + auth);
+        log.info("Active profile in security ::" + profileManager.getActiveProfiles());
+        if (profileManager.getActiveProfiles().equalsIgnoreCase("DB")) {
+            log.info("Active profile in configureDB ::");
+            configureDB(auth);
+        } else {
+            log.info("Active profile in configureLDAP ::");
+            configureLDAP(auth);
+
+        }
+    }
+
+    private void configureDB(AuthenticationManagerBuilder auth) throws Exception {
+        log.info("configureDB invoked ");
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
     }
 }

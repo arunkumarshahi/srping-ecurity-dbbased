@@ -2,10 +2,7 @@ package com.example.demo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.authentication.AuthenticationManager;
 import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
@@ -16,7 +13,7 @@ import java.util.Collections;
 
 @Configuration
 @EnableSwagger2
-@Profile("swagger")
+//@Profile("swagger")
 public class SwaggerConfig {
 
 
@@ -39,6 +36,7 @@ public class SwaggerConfig {
                 .paths(PathSelectors.regex("/.*"))
                 .build();
     }
+
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "My User controller API",
